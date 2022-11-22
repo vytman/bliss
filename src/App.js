@@ -1,25 +1,27 @@
-import logo from './logo.svg';
+import { Routes, Route } from 'react-router-dom';
+import React, { useEffect } from 'react';
 import './App.css';
+import { Questions } from './components/questions/Questions';
+import { NoInternet } from './components/noInternet/NoInternet';
+import { StyledContainer } from './style';
+import { Route as RouteName } from './constants/general';
+import { useCheckInterNet } from './hooks/general';
 
 function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+	const checkInternet = useCheckInterNet();
+
+	useEffect(() => {
+		checkInternet();
+	}, []);
+
+	return (
+		<StyledContainer>
+			<Routes>
+				<Route path={RouteName.QUESTIONS} element={<Questions />} />
+				<Route path={RouteName.NO_INTERNET} element={<NoInternet />} />
+			</Routes>
+		</StyledContainer>
+	);
 }
 
 export default App;
