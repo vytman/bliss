@@ -13,7 +13,7 @@ export const Questions = () => {
 	const [query, setQuery] = React.useState({ limit: 10, filter: '', offset: 0 });
 	const [isSearching, setIsSearching] = React.useState(false);
 
-	const getQuestionsClosure = () => {
+	const getQuestionsFunction = () => {
 		let timer;
 		return (filter = '', limit = 10, offset = 0) => {
 			clearInterval(timer);
@@ -35,10 +35,10 @@ export const Questions = () => {
 							setIsLoading(false);
 						});
 				});
-			}, [500]);
+			}, 500);
 		};
 	};
-	const getQuestions = getQuestionsClosure();
+	const getQuestions = getQuestionsFunction();
 
 	const checkHealth = () => {
 		setIsLoading(true);
