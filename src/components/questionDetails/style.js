@@ -22,3 +22,9 @@ export const StyledImg = styled.img`
 	max-width: 100%;
 	height: auto;
 `;
+
+export const StyledButton = styled.button`
+	&:hover {
+		cursor: pointer;
+	}
+`;

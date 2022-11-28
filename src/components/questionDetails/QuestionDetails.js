@@ -3,7 +3,7 @@ import axios from 'axios';
 import { Url } from '../../constants/general';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
-import { StyledVoteContainer, StyledVoteMainContainer, StyledDate, StyledImg } from './style';
+import { StyledVoteContainer, StyledVoteMainContainer, StyledDate, StyledImg, StyledButton } from './style';
 import { Loading } from '../loading/loading';
 
 export const QuestionDetails = props => {
@@ -53,25 +53,18 @@ export const QuestionDetails = props => {
 		<div>
 			{!isLoading && (
 				<>
-					<button onClick={handleOnClickBack}>Back</button>
+					<StyledButton onClick={handleOnClickBack}>Back</StyledButton>
 					<h2>{question}</h2>
-					<div>
-						{image_url && (
-							<div>
-								<StyledImg alt="Programming" src={image_url} />
-							</div>
-						)}
-						<div>
-							<StyledVoteMainContainer>
-								{choices?.map((choice, i) => (
-									<StyledVoteContainer key={i}>
-										<p>{choice.choice}</p>
-										<button onClick={handleOnClick}>Vote</button>
-									</StyledVoteContainer>
-								))}
-							</StyledVoteMainContainer>
-						</div>
-					</div>
+					{image_url && <StyledImg alt="Programming" src={image_url} />}
+					<StyledVoteMainContainer>
+						{choices?.map((choice, i) => (
+							<StyledVoteContainer key={i}>
+								<p>{choice.choice}</p>
+								<StyledButton onClick={handleOnClick}>Vote</StyledButton>
+							</StyledVoteContainer>
+						))}
+					</StyledVoteMainContainer>
+
 					{published_at && <StyledDate>{date}</StyledDate>}
 				</>
 			)}
