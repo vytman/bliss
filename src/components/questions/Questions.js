@@ -1,8 +1,10 @@
 import React, { useRef } from 'react';
 import axios from 'axios';
 import ClipLoader from 'react-spinners/ClipLoader';
-import { StyledClearButton, StyledButtonContainer } from './../../style';
 import { Url } from '../../constants/general';
+import { Question } from '../question/Question';
+import { StyledList, StyledClearButton, StyledButtonContainer } from './style';
+import debounce from 'lodash.debounce';
 
 export const Questions = () => {
 	const URL = Url.BASE;
@@ -13,34 +15,7 @@ export const Questions = () => {
 	const [query, setQuery] = React.useState({ limit: 10, filter: '', offset: 0 });
 	const [isSearching, setIsSearching] = React.useState(false);
 
-	const getQuestionsFunction = () => {
-		let timer;
-		return (filter = '', limit = 10, offset = 0) => {
-			clearInterval(timer);
-			timer = setTimeout(() => {
-				checkHealth().then(data => {
-					if (data?.status !== 'OK') {
-						return;
-					}
-					setIsLoading(true);
-					axios
-						.get(`${URL}/questions?limit=${limit}&filter=${filter}&offset=${offset}`)
-						.then(res => {
-							setQuestions(res.data);
-						})
-						.catch(err => {
-							console.log(err);
-						})
-						.finally(() => {
-							setIsLoading(false);
-						});
-				});
-			}, 500);
-		};
-	};
-	const getQuestions = getQuestionsFunction();
-
-	const checkHealth = () => {
+	const checkHealth = React.useCallback(() => {
 		setIsLoading(true);
 		return axios
 			.get(`${URL}/health`)
@@ -53,21 +28,45 @@ export const Questions = () => {
 			.finally(() => {
 				setIsLoading(false);
 			});
-	};
+	}, [URL]);
+
+	const fetchQuestions = React.useCallback(
+		(filter = '', limit = 10, offset = 0) => {
+			checkHealth().then(data => {
+				if (data?.status !== 'OK') {
+					return;
+				}
+				setIsLoading(true);
+				axios
+					.get(`${URL}/questions?limit=${limit}&filter=${filter}&offset=${offset}`)
+					.then(res => {
+						setQuestions(res.data);
+					})
+					.catch(err => {
+						console.log(err);
+					})
+					.finally(() => {
+						setIsLoading(false);
+					});
+			});
+		},
+		[URL, checkHealth]
+	);
+	const debouncedGetQuestions = React.useCallback(debounce(fetchQuestions, 500), [fetchQuestions]);
 
 	const handleOnRetry = () => {
-		getQuestions();
+		debouncedGetQuestions('');
 	};
 
 	const handleOnFilterChange = value => {
-		getQuestions(value);
+		debouncedGetQuestions(value);
 		setQuery({ ...query, filter: value });
 		setIsSearching(true);
 	};
 
 	const handleOnClear = e => {
 		setQuery({ ...query, filter: '' });
-		getQuestions('');
+		debouncedGetQuestions('');
 		setIsSearching(false);
 	};
 
@@ -94,32 +93,25 @@ export const Questions = () => {
 		return element.getBoundingClientRect().bottom <= window.innerHeight + 50;
 	};
 
+	let lastScrollTop = 0;
 	const trackScolling = () => {
-		if (isBottom) {
-			getQuestions({ ...query, offset: query.limit + query.offset, limit: 10 });
+		const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+		if (isBottom() && scrollTop > lastScrollTop) {
+			debouncedGetQuestions(query.filter, 10, query.length);
 		}
+		lastScrollTop = scrollTop <= 0 ? 0 : scrollTop;
 	};
 
 	React.useEffect(() => {
 		window.addEventListener('scroll', trackScolling);
-		getQuestions();
+		debouncedGetQuestions('');
 
 		return () => {
 			window.removeEventListener('scroll', trackScolling);
 		};
 	}, []);
 
-	// if (containerRef.current?.scrollTop === containerRef.current?.scrollHeight - containerRef.current?.offsetHeight) {
-	// 	console.log('nha');
-	// }
-
-	// console.log(containerRef.current);
-	// console.log(containerRef.current.scrollHeight);
-	// if (obj.scrollTop === obj.scrollHeight - obj.offsetHeight) {
-	// 	containerRef.current.
-	// }
-
-	const override = {
+	const overrideCSS = {
 		position: 'absolute',
 		margin: '0 auto',
 		borderColor: 'red',
@@ -150,17 +142,19 @@ export const Questions = () => {
 				</button>
 			)}
 
-			<ul>
+			<StyledList>
 				{questions.map((question, i) => (
-					<li key={i}>{question.question}</li>
+					<li key={i}>
+						<Question id={question.id} thumb={question.thumb_url} question={question.question} />{' '}
+					</li>
 				))}
-			</ul>
+			</StyledList>
 
 			{isSearching && <button onClick={handleOnClickShareScreen}>Share Screen</button>}
 			<ClipLoader
 				color={'#ffffff'}
 				loading={isLoading}
-				cssOverride={override}
+				cssOverride={overrideCSS}
 				size={150}
 				aria-label="Loading Spinner"
 			/>

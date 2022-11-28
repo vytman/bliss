@@ -5,4 +5,5 @@ export const Url = {
 export const Route = {
 	QUESTIONS: '/',
 	NO_INTERNET: '/noInternet',
+	QUESTION_DEATILS: '/questions/:id',
 };
