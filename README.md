@@ -1,70 +1,71 @@
-# Getting Started with Create React App
+# Bliss Recruitment App Requirements Specification
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
-## Available Scripts
+## Functional Requirements
 
-In the project directory, you can run:
+### FREQ-01: Loading Screen
 
-### `npm start`
+The frontend application must show a loading screen while the server health is checked. The server health is checked via the appropriate endpoint on the API.
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+-   If the server health is OK then the application should proceed to the “List Screen”.
+-   If the server health is NOT OK then the application should display a “Retry Action” widget.
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+### FREQ-02: Questions List Screen
 
-### `npm test`
+The frontend application must show the List Screen in two cases:
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+-   The loading screen managed to contact and check the server health
+-   The app was opened with an URL with the format
 
-### `npm run build`
+    -   http://HOST:PORT/questions?filter=FILTER
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+        -   Notice that this format contains a query parameter which should be used to fill the search box and trigger the search functionality.
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+            -   If the filter parameter is missing, the user should simply be placed at the listing.
+            -   If the filter parameter is present but has an empty value the user should be placed at the filter variant with no input inserted but with the input box focused.
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+The frontend application must fetch list data from the appropriate endpoint taking the following requirements into account:
 
-### `npm run eject`
+-   The app should fetch 10 records at a time
+-   There is no sorting functionality. The list will follow the order returned from the API.
+-   The app should start loading 10 additional records if the user shows intent to browse additional records
+-   The app should present a search box at the top of the list that allows the user to filter the results. Results should be shown on the same screen as a list. Searching implies hitting the appropriate endpoint and this variation must comply with the 2 requirements defined above.
+    -   If a search result is being shown (empty or not) the user must be allowed to share this with other users via the “Share Screen”. The app must send an appropriate URL that, when opened, drives the user to the appropriate screen.
+    -   The app must present a dismiss button to get out of the Search variant.
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+Each list element is selectable and whenever the user selects one record the app must show the “Detail Screen”.
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+### FREQ-03: Detail Screen
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+The frontend application must show the detail screen in two cases:
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+-   A row was selected in “List Screen”
+-   The application was opened with the detail screen URL from outside the app:
+    -   http://HOST:PORT/questions/QUESTION_ID/
 
-## Learn More
+The “Detail Screen” must allow the user to navigate back to the listing.
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+The “Detail Screen” must convey all the information of the object using appropriate visualization widgets.
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+The “Detail Screen” must allow the user to share this content with other users via the “Share Screen”.
+The app must send an appropriate URL that, when opened, drives the user to the appropriate screen.
+The “Detail Screen” must allow the user to vote on a particular answer via the use of a button. This should trigger an appropriate call to the API endpoint devoted to updating Questions
 
-### Code Splitting
+### Share Screen
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+This screen must allow the users to share this content with others via email.
 
-### Analyzing the Bundle Size
+The sharing mechanism should invoke the appropriate service on the back-end.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+### FREQ-05: No Connectivity Screen
 
-### Making a Progressive Web App
+The app must monitor connectivity with the Internet and show an appropriate screen whenever the connection is lost. This screen should remain visible as long as the device has no connection to the Internet. When a connection is regained then the user should be at the state where it was before.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+## Instructions
 
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+    0. Clone or download project
+    1. npm i
+    2. npm start
+    3. ???
+    4. profit
