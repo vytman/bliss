@@ -1,10 +1,10 @@
 import React, { useRef } from 'react';
 import axios from 'axios';
-import ClipLoader from 'react-spinners/ClipLoader';
 import { Url } from '../../constants/general';
 import { Question } from '../question/Question';
 import { StyledList, StyledClearButton, StyledButtonContainer } from './style';
 import debounce from 'lodash.debounce';
+import { Loading } from '../loading/loading';
 
 export const Questions = () => {
 	const URL = Url.BASE;
@@ -111,14 +111,6 @@ export const Questions = () => {
 		};
 	}, []);
 
-	const overrideCSS = {
-		position: 'absolute',
-		margin: '0 auto',
-		borderColor: 'red',
-		top: 'calc(50% - 87.5px)',
-		right: 'calc(50% - 87.5px)',
-	};
-
 	return (
 		<div ref={containerRef}>
 			{questions.length ? (
@@ -151,13 +143,7 @@ export const Questions = () => {
 			</StyledList>
 
 			{isSearching && <button onClick={handleOnClickShareScreen}>Share Screen</button>}
-			<ClipLoader
-				color={'#ffffff'}
-				loading={isLoading}
-				cssOverride={overrideCSS}
-				size={150}
-				aria-label="Loading Spinner"
-			/>
+			<Loading isLoading={isLoading} />
 		</div>
 	);
 };
